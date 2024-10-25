@@ -65,8 +65,6 @@ class BashWrapperBuilder {
 
     static final public List<String> BASH
 
-    static final public List<String> ENV_BASH
-
     static private int level
 
     @PackageScope
@@ -86,8 +84,7 @@ class BashWrapperBuilder {
         catch( Exception e ) {
             log.warn "Invalid value for `NXF_DEBUG` variable: $str -- See http://www.nextflow.io/docs/latest/config.html#environment-variables"
         }
-        BASH = Collections.unmodifiableList( level > 0 ? ['/bin/bash','-uex'] : ['/bin/bash','-ue'] )
-        ENV_BASH = Collections.unmodifiableList(['/usr/bin/env', '-S', 'bash', BASH[1]])
+        BASH = Collections.unmodifiableList(level > 0 ? ['/usr/bin/env', '-S', 'bash', '-uex'] : ['/usr/bin/env', '-S', 'bash', '-ue'])
 
     }
 
@@ -295,8 +292,8 @@ class BashWrapperBuilder {
         /*
          * fetch the script interpreter i.e. BASH, Perl, Python, etc
          */
-        String fetchedInterpreter = TaskProcessor.fetchInterpreter(script)
-        final interpreter = runWithContainer ? fetchedInterpreter : fetchedInterpreter.replace('/bin/bash', '/usr/bin/env -S bash')
+        final fetchedInterpreter = TaskProcessor.fetchInterpreter(script)
+        final interpreter = runWithContainer ? fetchedInterpreter.replace('/usr/bin/env -S bash', '/bin/bash') : fetchedInterpreter
 
         /*
          * append to the command script a prolog to capture the declared
